@@ -1,101 +1,19 @@
 import './App.css';
+import Header from './components/Header/Header';
+import Home from './components/Home/Home';
 
 function App() {
   return (
     <div id="box">
-      <header>
-        {/* Navigation */}
-        <h1>
-          <a className="home" href="#">
-            GamesPlay
-          </a>
-        </h1>
-        <nav>
-          <a href="#">All games</a>
-          {/* Logged-in users */}
-          <div id="user">
-            <a href="#">Create Game</a>
-            <a href="#">Logout</a>
-          </div>
-          {/* Guest users */}
-          <div id="guest">
-            <a href="#">Login</a>
-            <a href="#">Register</a>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation */}
+      <Header />
       {/* Main Content */}
       <main id="main-content"></main>
+      
       {/*Home Page*/}
-      <section id="welcome-world">
-        <div className="welcome-message">
-          <h2>ALL new games are</h2>
-          <h3>Only in GamesPlay</h3>
-        </div>
-        <img src="./images/four_slider_img01.png" alt="hero" />
-        <div id="home-page">
-          <h1>Latest Games</h1>
-          {/* Display div: with information about every game (if any) */}
-          <div className="game">
-            <div className="image-wrap">
-              <img src="./images/CoverFire.png" />
-            </div>
-            <h3>Cover Fire</h3>
-            <div className="rating">
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-            </div>
-            <div className="data-buttons">
-              <a href="#" className="btn details-btn">
-                Details
-              </a>
-            </div>
-          </div>
-          <div className="game">
-            <div className="image-wrap">
-              <img src="./images/ZombieLang.png" />
-            </div>
-            <h3>Zombie Lang</h3>
-            <div className="rating">
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-            </div>
-            <div className="data-buttons">
-              <a href="#" className="btn details-btn">
-                Details
-              </a>
-            </div>
-          </div>
-          <div className="game">
-            <div className="image-wrap">
-              <img src="./images/MineCraft.png" />
-            </div>
-            <h3>MineCraft</h3>
-            <div className="rating">
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-              <span>☆</span>
-            </div>
-            <div className="data-buttons">
-              <a href="#" className="btn details-btn">
-                Details
-              </a>
-            </div>
-          </div>
-          {/* Display paragraph: If there is no games  */}
-          <p className="no-articles">No games yet</p>
-        </div>
-      </section>
+      <Home />
       {/* Login Page ( Only for Guest users ) */}
-      <section id="login-page" className="auth">
+      {/* <section id="login-page" className="auth">
         <form id="login">
           <div className="container">
             <div className="brand-logo" />
@@ -117,9 +35,9 @@ function App() {
             </p>
           </div>
         </form>
-      </section>
+      </section> */}
       {/* Register Page ( Only for Guest users ) */}
-      <section id="register-page" className="content auth">
+      {/* <section id="register-page" className="content auth">
         <form id="register">
           <div className="container">
             <div className="brand-logo" />
@@ -143,9 +61,9 @@ function App() {
             </p>
           </div>
         </form>
-      </section>
+      </section> */}
       {/* Create Page ( Only for logged-in users ) */}
-      <section id="create-page" className="auth">
+      {/* <section id="create-page" className="auth">
         <form id="create">
           <div className="container">
             <h1>Create Game</h1>
@@ -187,9 +105,9 @@ function App() {
             />
           </div>
         </form>
-      </section>
+      </section> */}
       {/* Edit Page ( Only for the creator )*/}
-      <section id="edit-page" className="auth">
+      {/* <section id="edit-page" className="auth">
         <form id="edit">
           <div className="container">
             <h1>Edit Game</h1>
@@ -212,7 +130,7 @@ function App() {
             <input className="btn submit" type="submit" defaultValue="Edit Game" />
           </div>
         </form>
-      </section>
+      </section> */}
       {/*Details Page*/}
       <section id="game-details">
         <h1>Game Details</h1>
