@@ -16,12 +16,26 @@ import './App.css';
 function App() {
   const [games, setGames] = useState([]);
 
-    useEffect(() => {
-        gameService.getAll()
-            .then(result => {
-                setGames(result);
-            })
-    }, []);
+  // return new state with the same games however + the new game with its new comments
+  const addComment = (gameId, comment) => {
+    setGames(state => {
+      const game = state.find(x => x._id == gameId);
+      const comments = game.comments || [];
+      comments.push(comment)
+
+      return [
+        ...state.filter(x => x._id !== gameId),
+        { ...game, comments }
+      ]
+    })
+  };
+
+  useEffect(() => {
+    gameService.getAll()
+      .then(result => {
+        setGames(result);
+      })
+  }, []);
 
   return (
     <div id="box">
@@ -32,7 +46,7 @@ function App() {
 
       <Routes>
         {/*Home Page*/}
-        <Route path="/" element={<Home games={games}/>} />
+        <Route path="/" element={<Home games={games} />} />
         {/* Login Page ( Only for Guest users ) */}
         <Route path='/login' element={<Login />} />
         {/* Register Page ( Only for Guest users ) */}
@@ -42,7 +56,7 @@ function App() {
         {/* Edit Page ( Only for the creator )*/}
         <Route path='/edit' element={<Edit />} />
         {/*Details Page*/}
-        <Route path='/details' element={<Details />} />
+        <Route path='/catalog/:gameId' element={<Details games={games} addComment={addComment} />} />
         {/* Catalogue */}
         <Route path='/catalog' element={<Catalogue games={games} />} />
       </Routes>
