@@ -1,10 +1,9 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState, Suspense } from "react";
 import * as gameService from './services/gameService';
 import Header from './components/Header/Header';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login'
-import Register from './components/Register/Register';
 import Create from './components/Create/Create';
 import Edit from './components/Edit/Edit';
 import Details from './components/Details/Details';
@@ -13,6 +12,7 @@ import uniqid from 'uniqid';
 import './App.css';
 
 
+const Register = lazy(() => import('./components/Register/Register'))
 
 function App() {
   const [games, setGames] = useState([]);
@@ -33,12 +33,12 @@ function App() {
   };
 
   const addGameHandler = (gameData) => {
-    setGames(state => 
+    setGames(state =>
       [...state,
-         {
-           ...gameData,
-            _id: uniqid()
-         }
+      {
+        ...gameData,
+        _id: uniqid()
+      }
       ]);
 
     navigate('/catalog')
@@ -64,7 +64,12 @@ function App() {
         {/* Login Page ( Only for Guest users ) */}
         <Route path='/login' element={<Login />} />
         {/* Register Page ( Only for Guest users ) */}
-        <Route path='/register' element={<Register />} />
+        <Route path='/register' element=
+          {
+            <Suspense fallback={<span>Loading...</span>}>
+              <Register />
+            </Suspense>
+          } />
         {/* Create Page ( Only for logged-in users ) */}
         <Route path='/create' element={<Create addGameHandler={addGameHandler} />} />
         {/* Edit Page ( Only for the creator )*/}
