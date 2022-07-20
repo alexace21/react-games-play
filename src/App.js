@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-
-import './App.css';
+import { useEffect, useState } from "react";
+import * as gameService from './services/gameService';
 import Header from './components/Header/Header';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login'
@@ -9,8 +9,20 @@ import Create from './components/Create/Create';
 import Edit from './components/Edit/Edit';
 import Details from './components/Details/Details';
 import Catalogue from './components/Catalogue/Catalogue';
+import './App.css';
+
+
 
 function App() {
+  const [games, setGames] = useState([]);
+
+    useEffect(() => {
+        gameService.getAll()
+            .then(result => {
+                setGames(result);
+            })
+    }, []);
+
   return (
     <div id="box">
       {/* Navigation */}
@@ -20,7 +32,7 @@ function App() {
 
       <Routes>
         {/*Home Page*/}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home games={games}/>} />
         {/* Login Page ( Only for Guest users ) */}
         <Route path='/login' element={<Login />} />
         {/* Register Page ( Only for Guest users ) */}
@@ -32,7 +44,7 @@ function App() {
         {/*Details Page*/}
         <Route path='/details' element={<Details />} />
         {/* Catalogue */}
-        <Route path='/catalog' element={<Catalogue />} />
+        <Route path='/catalog' element={<Catalogue games={games} />} />
       </Routes>
 
     </div>
