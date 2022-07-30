@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useContext } from 'react';
+import { GameContex } from '../../context/GameContext';
 
-const Details = ({ games, addComment }) => {
-
+const Details = () => {
+    const { games, addComment } = useContext(GameContex);
     const { gameId } = useParams();
     const [comment, setComment] = useState({
         username: '',
@@ -77,10 +79,10 @@ const Details = ({ games, addComment }) => {
                 </div>
                 {/* Edit/Delete buttons ( Only for creator of this game )  */}
                 <div className="buttons">
-                    <a href="#" className="button">
+                    <a href="/edit" className="button">
                         Edit
                     </a>
-                    <a href="#" className="button">
+                    <a href="/delete" className="button">
                         Delete
                     </a>
                 </div>
@@ -98,8 +100,8 @@ const Details = ({ games, addComment }) => {
                         onBlur={validateUsername}
                         value={comment.username}
                     />
-                    {error.username && 
-                        <div style={{color: 'red'}}>{error.username}</div>
+                    {error.username &&
+                        <div style={{ color: 'red' }}>{error.username}</div>
                     }
                     <textarea
                         name="comment"

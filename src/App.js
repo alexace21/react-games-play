@@ -1,6 +1,6 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { lazy, useEffect, useState, Suspense } from "react";
-import uniqid from 'uniqid';
+import { GameContex } from './context/GameContext';
 
 import * as gameService from './services/gameService';
 import AuthContext from './context/AuthContext';
@@ -14,13 +14,14 @@ import Edit from './components/Edit/Edit';
 import Details from './components/Details/Details';
 import Catalogue from './components/Catalogue/Catalogue';
 import './App.css';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 
 const Register = lazy(() => import('./components/Register/Register'))
 
 function App() {
   const [games, setGames] = useState([]);
-  const [auth, setAuth] = useState({});
+  const [auth, setAuth] = useLocalStorage('auth', {});
 
   const navigate = useNavigate();
 
@@ -49,10 +50,7 @@ function App() {
   const addGameHandler = (gameData) => {
     setGames(state =>
       [...state,
-      {
-        ...gameData,
-        _id: uniqid()
-      }
+        gameData
       ]);
 
     navigate('/catalog')
@@ -65,36 +63,43 @@ function App() {
       })
   }, []);
 
+  const gameEdit = (gameId, gameData) => {
+    setGames(state => state.map(x => x._id === gameId ? gameData : x))
+  }
+
   return (
-    <AuthContext.Provider value={{user: auth, userLoginHandler, userLogout}}>
+    <AuthContext.Provider value={{ user: auth, userLoginHandler, userLogout }}>
       <div id="box">
         {/* Navigation */}
         <Header />
         {/* Main Content */}
-        <main id="main-content"></main>
+        <GameContex.Provider value={{games, addGameHandler, addComment, gameEdit}}>
+          <main id="main-content">
 
-        <Routes>
-          {/*Home Page*/}
-          <Route path="/" element={<Home games={games} />} />
-          {/* Login Page ( Only for Guest users ) */}
-          <Route path='/login' element={<Login />} />
-          {/* Register Page ( Only for Guest users ) */}
-          <Route path='/register' element=
-            {
-              <Suspense fallback={<span>Loading...</span>}>
-                <Register />
-              </Suspense>
-            } />
-          <Route path='/logout' element={<Logout />} />
-          {/* Create Page ( Only for logged-in users ) */}
-          <Route path='/create' element={<Create addGameHandler={addGameHandler} />} />
-          {/* Edit Page ( Only for the creator )*/}
-          <Route path='/edit' element={<Edit />} />
-          {/*Details Page*/}
-          <Route path='/catalog/:gameId' element={<Details games={games} addComment={addComment} />} />
-          {/* Catalogue */}
-          <Route path='/catalog' element={<Catalogue games={games} />} />
-        </Routes>
+            <Routes>
+              {/*Home Page*/}
+              <Route path="/" element={<Home games={games} />} />
+              {/* Login Page ( Only for Guest users ) */}
+              <Route path='/login' element={<Login />} />
+              {/* Register Page ( Only for Guest users ) */}
+              <Route path='/register' element=
+                {
+                  <Suspense fallback={<span>Loading...</span>}>
+                    <Register />
+                  </Suspense>
+                } />
+              <Route path='/logout' element={<Logout />} />
+              {/* Create Page ( Only for logged-in users ) */}
+              <Route path='/create' element={<Create />} />
+              {/* Edit Page ( Only for the creator )*/}
+              <Route path='/games/:gameId/edit' element={<Edit />} />
+              {/*Details Page*/}
+              <Route path='/catalog/:gameId' element={<Details />} />
+              {/* Catalogue */}
+              <Route path='/catalog' element={<Catalogue />} />
+            </Routes>
+          </main>
+        </GameContex.Provider>
 
       </div>
     </AuthContext.Provider>
