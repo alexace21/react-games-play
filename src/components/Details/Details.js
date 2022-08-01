@@ -1,52 +1,52 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { GameContex } from '../../context/GameContext';
 
+import * as gameService from '../../services/gameService';
+import * as commentService from '../../services/commentService';
+
 const Details = () => {
-    const { games, addComment } = useContext(GameContex);
+    const { addComment, fetchGameDetails, selectGame, deleteGame } = useContext(GameContex);
     const { gameId } = useParams();
-    const [comment, setComment] = useState({
-        username: '',
-        comment: ''
-    });
+    const navigate = useNavigate();
+    const currentGame = selectGame(gameId);
 
-    const [error, setErrors] = useState({
-        username: '',
-        error: ''
-    });
+    useEffect(() => {
+        (async () => {
+            const gameDetails = await gameService.getOne(gameId);
+            console.log(gameDetails);
+            const gameComments = await commentService.getByGameId(gameId);
 
-    const game = games.find(x => x._id == gameId
-    )
+            fetchGameDetails(gameId, {...gameDetails, comments: gameComments.map(x => `${x.user.email}: ${x.text}`)});
+        })();
+    }, [])
 
     const addCommentHandler = (e) => {
         e.preventDefault();
-        console.log(comment);
-        addComment(gameId, `${comment.username}: ${comment.comment}`)
+        const formData = new FormData(e.target);
+        const comment = formData.get('comment');
+        // TODO VALIDATION!!
+
+        commentService.create(gameId, comment)
+            .then(result => {
+                console.log(result);
+                addComment(gameId, comment)
+            })
     };
 
-    const onChange = (e) => {
-        setComment(oldComment => ({
-            ...oldComment,
-            [e.target.name]: e.target.value
-        }));
-    };
+    const gameDeleteHandler = () => {
+        // TODO confirmation if user is certain they would like to delete
 
-    const validateUsername = (e) => {
-        const username = e.target.value;
-        let errorMessage = '';
-        if (username.length < 4) {
-            errorMessage = 'Username must be longer than 4 characters!';
+        const confirmation = confirm('Are you sure you would like to delete this game?');
+
+        if(confirmation) {
+            gameService.remove(gameId)
+                .then(() => {
+                    deleteGame(gameId);
+                    navigate('/catalog');
+                })
         }
-
-        if (username.length > 10) {
-            errorMessage = 'Username must be shorter than 10 characters!';
-        }
-
-        setErrors(state => ({
-            ...state,
-            'username': errorMessage,
-        }));
     };
 
     return (
@@ -54,26 +54,27 @@ const Details = () => {
             <h1>Game Details</h1>
             <div className="info-section">
                 <div className="game-header">
-                    <img className="game-img" src={game.imageUrl} />
-                    <h1>{game.title}</h1>
-                    <span className="levels">MaxLevel: {game.maxLevel}</span>
-                    <p className="type">{game.category}</p>
+                    <img className="game-img" src={currentGame.imageUrl} />
+                    <h1>{currentGame.title}</h1>
+                    <span className="levels">MaxLevel: {currentGame.maxLevel}</span>
+                    <p className="type">{currentGame.category}</p>
                 </div>
                 <p className="text">
-                    {game.summary}
+                    {currentGame.summary}
                 </p>
                 {/* Bonus ( for Guests and Users ) */}
                 <div className="details-comments">
                     <h2>Comments:</h2>
                     <ul>
-                        {!game.comments &&
-                            <p className="no-comment">No comments.</p>
-                        }
-                        {game.comments?.map(x =>
-                            <li className="comment">
-                                <p>{x}.</p>
+                        {currentGame.comments?.map(x =>
+                            <li key={x} className="comment">
+                                <p>{x}</p>
                             </li>
                         )}
+
+                        {!currentGame.comments &&
+                            <p className="no-comment">No comments.</p>
+                        }
                     </ul>
                     {/* Display paragraph: If there are no games in the database */}
                 </div>
@@ -82,9 +83,9 @@ const Details = () => {
                     <a href="/edit" className="button">
                         Edit
                     </a>
-                    <a href="/delete" className="button">
+                    <button onClick={gameDeleteHandler} className="button">
                         Delete
-                    </a>
+                    </button>
                 </div>
             </div>
             {/* Bonus */}
@@ -92,22 +93,10 @@ const Details = () => {
             <article className="create-comment">
                 <label>Add new comment:</label>
                 <form className="form" onSubmit={addCommentHandler}>
-                    <input
-                        type="text"
-                        name='username'
-                        placeholder='Leeroy Jenkins'
-                        onChange={onChange}
-                        onBlur={validateUsername}
-                        value={comment.username}
-                    />
-                    {error.username &&
-                        <div style={{ color: 'red' }}>{error.username}</div>
-                    }
+
                     <textarea
                         name="comment"
                         placeholder="Comment......"
-                        onChange={onChange}
-                        value={comment.comment}
                     />
                     <input
                         className="btn submit"

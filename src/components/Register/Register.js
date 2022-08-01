@@ -1,13 +1,11 @@
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
 import * as authService from '../../services/authService';
-import AuthContext from '../../context/AuthContext';
+import { withAuth } from '../../context/AuthContext';
 
 import { Link } from 'react-router-dom';
 
-const Register = () => {
-    const { userLoginHandler } = useContext(AuthContext);
+const Register = ({ auth }) => {
     const navigate = useNavigate();
 
     const onSubmit = (e) => {
@@ -25,7 +23,7 @@ const Register = () => {
 
         authService.register(email, password)
             .then(authData => {
-                userLoginHandler(authData);
+                auth.userLoginHandler(authData);
                 navigate('/');
             })
     }
@@ -59,4 +57,4 @@ const Register = () => {
     )
 };
 
-export default Register;
+export default withAuth(Register);
